@@ -1,0 +1,4 @@
+*pyc
+*DS_STORE
+kinetics/lib/__pycache__/*pyc
+kinetics/dataset/
