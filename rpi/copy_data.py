@@ -1,14 +1,22 @@
 import paramiko
 from scp import SCPClient
 
-ADDR='sha-51764-mbp.local'
+ADDR='10.249.77.157'
+USR_NAME='Dakan Wang'
+PWD = 'WeWork1203'
 
-ssh_client=paramiko.SSHClient()
-ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-ssh_client.connect(hostname=ADDR,username='Dakan Wang',password='WeWork1203')
 
-stdin,stdout,stderr=ssh_client.exec_command('ls')
-print(stdout.readlines())
+class SSH_Client:
+  def __init__(self):
+    self.ssh_client=paramiko.SSHClient()
+    self.ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-scp_client = SCPClient(ssh_client.get_transport())
-scp_client.put('/home/pi/Downloads/test.png','/Users/dakanwang/Downloads/')
+
+  def copy_to_server(self, in_folder, out_folder):    
+    self.ssh_client.connect(hostname=ADDR,username=USR_NAME,password=PWD)
+    print ('connecting to on_prem_server using ssh')
+    stdin,stdout,stderr=self.ssh_client.exec_command('ls')
+    print(stdout.readlines())
+    scp_client = SCPClient(self.ssh_client.get_transport())
+    scp_client.put(in_folder, recursive=True, remote_path=out_folder)
+    

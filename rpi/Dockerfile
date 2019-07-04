@@ -50,19 +50,7 @@ RUN pip3 install --upgrade pip
 RUN pip3 install --upgrade setuptools
 RUN pip3 install --upgrade six
 RUN pip3 install "picamera[array]"
-RUN pip3 install -r /requirements_raspbian.txt
-
-# Copy over certificates
-RUN curl https://www.amazontrust.com/repository/AmazonRootCA1.pem > root-CA.crt
-COPY certs/chn-wwhq-f3-common-rpi.cert.pem ./
-COPY certs/chn-wwhq-f3-common-rpi.private.key ./
-COPY certs/root-CA.crt ./
-
-# Copy over the secret sauce
-RUN mkdir -p /root/darknet-nnpack/backup/
-
-# copying examples?
-COPY src/examples/rpi_video_aws.py /root/darknet-nnpack/
-COPY src/examples/rpi_video_local.py /root/darknet-nnpack/
+RUN pip3 install paramiko
+RUN pip3 install scp
 
 
