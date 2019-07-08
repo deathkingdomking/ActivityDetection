@@ -1,0 +1,107 @@
+{
+  "type" : "record",
+  "name" : "MyClass",
+  "namespace" : "com.test.avro",
+  "fields" : [ {
+    "name" : "actor",
+    "type" : {
+      "type" : "record",
+      "name" : "actor",
+      "fields" : [ {
+        "name" : "type",
+        "type" : "string"
+      }, {
+        "name" : "displayName",
+        "type" : "string"
+      }, {
+        "name" : "id",
+        "type" : "string"
+      }, {
+        "name" : "mac",
+        "type" : "string"
+      } ]
+    }
+  }, {
+    "name" : "verb",
+    "type" : "string"
+  }, {
+    "name" : "object",
+    "type" : {
+      "type" : "record",
+      "name" : "object",
+      "fields" : [ {
+        "name" : "type",
+        "type" : "string"
+      }, {
+        "name" : "displayName",
+        "type" : "string"
+      }, {
+        "name" : "area",
+        "type" : {
+          "type" : "record",
+          "name" : "area",
+          "fields" : [ {
+            "name" : "displayName",
+            "type" : "string"
+          }, {
+            "name" : "id",
+            "type" : "string"
+          } ]
+        }
+      }, {
+        "name" : "id",
+        "type" : "string"
+      } ]
+    }
+  }, {
+    "name" : "publish",
+    "type" : "string"
+  }, {
+    "name" : "description",
+    "type" : "string"
+  }, {
+    "name" : "ec_event_id",
+    "type" : "string"
+  }, {
+    "name" : "ec_event_time",
+    "type" : "long"
+  }, {
+    "name" : "result",
+    "type" : {
+      "type" : "record",
+      "name" : "result",
+      "fields" : [ {
+        "name" : "type",
+        "type" : "string"
+      }, {
+        "name" : "count",
+        "type" : "long"
+      }, {
+        "name" : "source",
+        "type" : "string"
+      }, {
+        "name" : "positions",
+        "type" : {
+          "type" : "array",
+          "items" : {
+            "type" : "record",
+            "name" : "positions",
+            "fields" : [ {
+              "name" : "x",
+              "type" : "double"
+            }, {
+              "name" : "y",
+              "type" : "double"
+            }, {
+              "name" : "h",
+              "type" : "double"
+            }, {
+              "name" : "w",
+              "type" : "double"
+            } ]
+          }
+        }
+      } ]
+    }
+  } ]
+}

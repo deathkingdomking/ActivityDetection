@@ -9,6 +9,42 @@ from yolo_model import YoloModel
 
 FLAGS = []
 
+
+def init_model(FLAGS):
+
+	FLAGS.root_path = '/root/data/activity/'
+	FLAGS.model_path = '/'.join([FLAGS.root_path, 'model'])
+
+
+	FLAGS.weights = '/'.join([FLAGS.model_path, 'weight.weights'])
+	FLAGS.config = '/'.join([FLAGS.model_path, 'config.cfg'])
+	FLAGS.labels = '/'.join([FLAGS.model_path, 'name.names'])
+
+	print ('flags=%s' % FLAGS)
+
+	model = YoloModel(FLAGS)
+	print ('intialzied model to be: %s', model)
+	return model
+
+
+def get_next_image():
+	return 0
+
+
+def send_out_results():
+	return 0
+
+
+def run_app(FLAGS):
+	model = init_model(FLAGS)
+	while True:
+		time.sleep(1)
+		in_path = '/'.join([FLAGS.root_path,  'in', '1.jpg'])
+		out_path = '/'.join([FLAGS.root_path,  'out', 'predcted-1.jpg'])
+		model.predict(in_path, out_path)
+
+
+
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 
@@ -56,22 +92,8 @@ if __name__ == '__main__':
 
 	FLAGS, unparsed = parser.parse_known_args()
 
-	FLAGS.root_path = '/root/data/activity/'
-	FLAGS.model_path = '/'.join([FLAGS.root_path, 'model'])
 
-
-	FLAGS.weights = '/'.join([FLAGS.model_path, 'weight.weights'])
-	FLAGS.config = '/'.join([FLAGS.model_path, 'config.cfg'])
-	FLAGS.labels = '/'.join([FLAGS.model_path, 'name.names'])
-
-	print ('flags=%s' % FLAGS)
-
-	model = YoloModel(FLAGS)
-
-	in_path = '/'.join([FLAGS.root_path,  'in', '1.jpg'])
-	out_path = '/'.join([FLAGS.root_path,  'out', '1.jpg'])
-
-	model.predict(in_path, out_path)
+	run_app(FLAGS)
 
 
 

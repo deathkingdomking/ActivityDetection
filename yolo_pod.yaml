@@ -1,0 +1,57 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata: 
+  name: yolo-deployment
+spec: 
+  replicas: 1
+  selector: 
+    matchLabels: 
+      app: activity
+  template: 
+    metadata: 
+      labels: 
+        app: activity
+    spec: 
+      containers: 
+        - 
+          image: activity-detection/cv:latest
+          imagePullPolicy: Never
+          name: activity
+          volumeMounts:
+            - mountPath: /root/data/
+              name: yolo-data-volume
+            - mountPath: /root/workspace/cv/
+              name: yolo-code-volume
+          command: ["/bin/sh"]
+          args: ["-c", "python3 /root/workspace/cv/yolo.py"]
+          #command: ["/bin/sh"]
+          #args: ["-c", "while true; do echo hello; sleep 10;done"]
+          ports:
+            - 
+              containerPort: 3306
+      volumes:
+        - name: yolo-data-volume
+          hostPath:
+            # directory location on host
+            path: /Users/dakanwang/workspace/on_premise/
+            # this field is optional
+            type: Directory
+        - name: yolo-code-volume
+          hostPath:
+            path: /Users/dakanwang/workspace/ActivityDetection/  
+            type: Directory 
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: activity-service
+spec:
+  selector:
+    app: activity
+  ports:
+    - 
+      protocol: TCP
+      type: ClusterIP
+      port: 3306
