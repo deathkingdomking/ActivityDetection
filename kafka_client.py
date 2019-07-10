@@ -1,8 +1,8 @@
 import time
 
-from we.eventcollector.ec import *
+import we.eventcollector.ec as event_collector
 from we.eventcollector.serialization import parse_schema
-from schema.actvity import *
+from schema import activity_chn
 import asyncio
 import time
 import os
@@ -10,13 +10,18 @@ import os
 script_dir = os.path.dirname(__file__)
 URL = "https://ec.luoxinshe.cn"
 
+
 class Kafka_Client:
 
 	def __init__(self):	
-		self.ec = EventCollector(URL,"science", "v1", "recognize-test", timeout=5*60)
-		reg = lambda: ec.register_schema_from_file(os.path.join(script_dir,"./schema/activity_chn.avsc"), "test")
+		self.ec = event_collector.EventCollector(URL,"science", "v1", "recognize-test", timeout=5*60)
+		event = activity_chn.sample_activity_chn_data
+
+		print ('schema file: %s', os.path.join(script_dir,"./schema/activity_chn.avro"))
+		print ('event to push: %s', event)
+
+		reg = lambda: event_collector.EventCollector.register_schema_from_file(os.path.join(script_dir,"./schema/activity_chn.avro"), "test")
 		asyncio.get_event_loop().run_until_complete(reg())
-		event = activity_data
 		async def reg_and_send():
 	 		sender = await reg()
 	 		await sender.send_event(event)

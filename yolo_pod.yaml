@@ -25,11 +25,25 @@ spec:
               name: yolo-code-volume
           command: ["/bin/sh"]
           args: ["-c", "python3 /root/workspace/cv/yolo.py"]
-          #command: ["/bin/sh"]
-          #args: ["-c", "while true; do echo hello; sleep 10;done"]
+          # command: ["/bin/sh"]
+          # args: ["-c", "while true; do echo hello; sleep 10;done"]
           ports:
             - 
-              containerPort: 3306
+              containerPort: 3306     
+        - 
+          image: activity-detection/shadow:latest
+          imagePullPolicy: Never
+          name: rpi-shadow
+          volumeMounts:
+            - mountPath: /root/data/
+              name: yolo-data-volume
+            - mountPath: /root/workspace/shadow/
+              name: shadow-code-volume
+          command: ["/bin/sh"]
+          args: ["-c", "while true; do echo hello; sleep 10;done"]
+          ports:
+            - 
+              containerPort: 3307
       volumes:
         - name: yolo-data-volume
           hostPath:
@@ -40,7 +54,11 @@ spec:
         - name: yolo-code-volume
           hostPath:
             path: /Users/dakanwang/workspace/ActivityDetection/  
-            type: Directory 
+            type: Directory
+        - name: shadow-code-volume
+          hostpath:
+            path: /Users/dakanwang/workspace/ActivityDetection/shadow/
+            type: Directory
 
 ---
 kind: Service
