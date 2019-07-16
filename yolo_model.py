@@ -24,7 +24,7 @@ class YoloModel:
     self.layer_names = [self.layer_names[i[0] - 1] for i in self.net.getUnconnectedOutLayers()]
 	        
 
-  def predict(self, in_path, out_path):
+  def predict(self, in_path, out_img_path, out_json_path):
     # Read the image
     try:
       print ('read image from %s' % in_path)
@@ -34,6 +34,9 @@ class YoloModel:
       raise 'Image cannot be loaded!\n\
                                Please check the path provided!'
     finally:
-      img, _, _, _, _ = infer_image(self.net, self.layer_names, height, width, img, self.colors, self.labels, self.FLAGS)
-      cv.imwrite(out_path, img)
+      img, boxes, confidences, classids, idxs = infer_image(self.net, self.layer_names, height, width, img, self.colors, self.labels, self.FLAGS)
+      cv.imwrite(out_img_path, img)
+      with open(out_json_path) as json_file:
+        json_file.dump({'boxes': boxes, 'confidences': confidences, 'classids': classids, 'idxs': idxs})
+
       # show_image(img)

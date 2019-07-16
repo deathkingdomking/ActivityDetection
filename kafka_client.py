@@ -20,7 +20,7 @@ class Kafka_Client:
 		print ('schema file: %s', os.path.join(script_dir,"./schema/activity_chn.avro"))
 		print ('event to push: %s', event)
 
-		reg = lambda: event_collector.EventCollector.register_schema_from_file(os.path.join(script_dir,"./schema/activity_chn.avro"), "test")
+		reg = lambda: self.ec.register_schema_from_file(os.path.join(script_dir,"./schema/activity_chn.avro"), "recognize-test")
 		asyncio.get_event_loop().run_until_complete(reg())
 		async def reg_and_send():
 	 		sender = await reg()

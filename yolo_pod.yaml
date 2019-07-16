@@ -19,9 +19,11 @@ spec:
           imagePullPolicy: Never
           name: activity
           volumeMounts:
-            - mountPath: /root/data/
+            -   
+              mountPath: /root/data/
               name: yolo-data-volume
-            - mountPath: /root/workspace/cv/
+            - 
+              mountPath: /root/workspace/cv/
               name: yolo-code-volume
           command: ["/bin/sh"]
           args: ["-c", "python3 /root/workspace/cv/yolo.py"]
@@ -35,9 +37,11 @@ spec:
           imagePullPolicy: Never
           name: rpi-shadow
           volumeMounts:
-            - mountPath: /root/data/
+            - 
+              mountPath: /root/data/
               name: yolo-data-volume
-            - mountPath: /root/workspace/shadow/
+            - 
+              mountPath: /root/workspace/shadow/
               name: shadow-code-volume
           command: ["/bin/sh"]
           args: ["-c", "while true; do echo hello; sleep 10;done"]
@@ -45,20 +49,23 @@ spec:
             - 
               containerPort: 3307
       volumes:
-        - name: yolo-data-volume
+        - 
+          name: yolo-data-volume
           hostPath:
-            # directory location on host
             path: /Users/dakanwang/workspace/on_premise/
-            # this field is optional
             type: Directory
-        - name: yolo-code-volume
+        - 
+          name: shadow-code-volume
           hostPath:
-            path: /Users/dakanwang/workspace/ActivityDetection/  
-            type: Directory
-        - name: shadow-code-volume
-          hostpath:
             path: /Users/dakanwang/workspace/ActivityDetection/shadow/
+            type: Directory    
+        - 
+          name: yolo-code-volume
+          hostPath:
+            path: /Users/dakanwang/workspace/ActivityDetection/
             type: Directory
+        
+
 
 ---
 kind: Service

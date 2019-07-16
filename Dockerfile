@@ -51,5 +51,5 @@ RUN wget https://yt-dl.org/downloads/latest/youtube-dl -O /usr/bin/youtube-dl
 RUN cd /root/workspace/  && git clone https://deathkingdomking:f1f24b5cefbf4534d94338388da086e88450e16d@github.com/WeConnect/cn-eventcollector-python 
 RUN cd /root/workspace/cn-eventcollector-python && python3 setup.py install
 
-
+RUN pip install watchdog
 

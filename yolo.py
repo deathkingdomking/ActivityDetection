@@ -40,8 +40,9 @@ def run_app(FLAGS):
 	while True:
 		time.sleep(1)
 		in_path = '/'.join([FLAGS.root_path,  'in', '1.jpg'])
-		out_path = '/'.join([FLAGS.root_path,  'out', 'predcted-1.jpg'])
-		model.predict(in_path, out_path)
+		out_img_path = '/'.join([FLAGS.root_path,  'out', 'predicted-1.jpg'])
+		out_json_path = '/'.join([FLAGS.root_path,  'out', 'predicted-1.json'])
+		model.predict(in_path, out_img_path, out_json_path)
 
 
 
