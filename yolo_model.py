@@ -3,6 +3,7 @@ import argparse
 import cv2 as cv
 import subprocess
 import time
+import json
 import os
 from yolo_utils import infer_image, show_image
 
@@ -34,9 +35,9 @@ class YoloModel:
       raise 'Image cannot be loaded!\n\
                                Please check the path provided!'
     finally:
-      img, boxes, confidences, classids, idxs = infer_image(self.net, self.layer_names, height, width, img, self.colors, self.labels, self.FLAGS)
+      img, json_data = infer_image(self.net, self.layer_names, height, width, img, self.colors, self.labels, self.FLAGS)
       cv.imwrite(out_img_path, img)
-      with open(out_json_path) as json_file:
-        json_file.dump({'boxes': boxes, 'confidences': confidences, 'classids': classids, 'idxs': idxs})
+      with open(out_json_path, "w") as json_file:
+        json.dump(json_data, json_file)
 
       # show_image(img)

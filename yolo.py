@@ -6,44 +6,89 @@ import time
 import os
 from yolo_utils import infer_image, show_image
 from yolo_model import YoloModel
+import logging
+import shutil
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
 
 FLAGS = []
 
 
-def init_model(FLAGS):
+ROOT_DIR = "/root/data/"
+ACTVITIT_DIR = os.path.join(ROOT_DIR, 'activity')
+ACTIVITY_DIR_IN = os.path.join(ACTVITIT_DIR, 'in')
+ACTIVITY_DIR_OUT = os.path.join(ACTVITIT_DIR, 'out')
+IMG_SUFFIX = ".jpeg"
+JSON_SUFFIX = ".json"
 
-	FLAGS.root_path = '/root/data/activity/'
-	FLAGS.model_path = '/'.join([FLAGS.root_path, 'model'])
+class Watcher:
+    DIRECTORY_TO_WATCH = ACTVITIT_DIR
+
+    def __init__(self):
+        self.observer = Observer()
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.WARNING)
+        self.model = self.init_model()
+
+    def init_model(self):
+        FLAGS.root_path = ACTVITIT_DIR
+        FLAGS.model_path = '/'.join([FLAGS.root_path, 'model'])
+        FLAGS.weights = '/'.join([FLAGS.model_path, 'weight.weights'])
+        FLAGS.config = '/'.join([FLAGS.model_path, 'config.cfg'])
+        FLAGS.labels = '/'.join([FLAGS.model_path, 'name.names'])
+        print ('flags=%s' % FLAGS)
+        model = YoloModel(FLAGS)
+        Handler.model = model
+        print ('intialzied model to be: %s', model)
+
+        return model
+
+    def run(self, FLAGS):
+        event_handler = Handler()
+        self.observer.schedule(event_handler, ACTIVITY_DIR_IN, recursive=True)
+        self.observer.start()
+        try:
+            while True:
+                time.sleep(5)
+        except:
+            self.observer.stop()
+            print ("Error")
+
+        self.observer.join()
 
 
-	FLAGS.weights = '/'.join([FLAGS.model_path, 'weight.weights'])
-	FLAGS.config = '/'.join([FLAGS.model_path, 'config.cfg'])
-	FLAGS.labels = '/'.join([FLAGS.model_path, 'name.names'])
+class Handler(FileSystemEventHandler):
 
-	print ('flags=%s' % FLAGS)
+    model = None
 
-	model = YoloModel(FLAGS)
-	print ('intialzied model to be: %s', model)
-	return model
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.WARNING) 
+        super(Handler, self).__init__()   
+
+    @staticmethod
+    def on_any_event(event):
+
+        print (event)   
+        if event.is_directory:
+            return None
+        elif event.event_type == 'created':
+            # Take any action here when a file is first created.
+            print ("Received created event - %s." % event.src_path)
+            Handler.call_service(event.src_path, Handler.model)
+        else:
+        	return None
 
 
-def get_next_image():
-	return 0
+    @staticmethod 
+    def call_service(in_path, model):
+        file_name = os.path.basename(in_path).rstrip(IMG_SUFFIX)
+        predicted_img_name = 'predicted-' + file_name + IMG_SUFFIX
+        predicted_json_name = 'predicted-' + file_name + JSON_SUFFIX
+        out_img_path = os.path.join(ACTIVITY_DIR_OUT, predicted_img_name)
+        out_json_path = os.path.join(ACTIVITY_DIR_OUT, predicted_json_name)
 
-
-def send_out_results():
-	return 0
-
-
-def run_app(FLAGS):
-	model = init_model(FLAGS)
-	while True:
-		time.sleep(1)
-		in_path = '/'.join([FLAGS.root_path,  'in', '1.jpg'])
-		out_img_path = '/'.join([FLAGS.root_path,  'out', 'predicted-1.jpg'])
-		out_json_path = '/'.join([FLAGS.root_path,  'out', 'predicted-1.json'])
-		model.predict(in_path, out_img_path, out_json_path)
-
+        model.predict(in_path, out_img_path, out_json_path)
 
 
 if __name__ == '__main__':
@@ -93,8 +138,8 @@ if __name__ == '__main__':
 
 	FLAGS, unparsed = parser.parse_known_args()
 
-
-	run_app(FLAGS)
+	w = Watcher()
+	w.run(FLAGS)
 
 
 

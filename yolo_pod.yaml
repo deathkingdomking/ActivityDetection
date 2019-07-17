@@ -25,10 +25,10 @@ spec:
             - 
               mountPath: /root/workspace/cv/
               name: yolo-code-volume
-          command: ["/bin/sh"]
-          args: ["-c", "python3 /root/workspace/cv/yolo.py"]
           # command: ["/bin/sh"]
-          # args: ["-c", "while true; do echo hello; sleep 10;done"]
+          # args: ["-c", "python3 /root/workspace/cv/yolo.py"]
+          command: ["/bin/sh"]
+          args: ["-c", "while true; do echo hello; sleep 10;done"]
           ports:
             - 
               containerPort: 3306     
@@ -57,7 +57,7 @@ spec:
         - 
           name: shadow-code-volume
           hostPath:
-            path: /Users/dakanwang/workspace/ActivityDetection/shadow/
+            path: /Users/dakanwang/workspace/ActivityDetection/
             type: Directory    
         - 
           name: yolo-code-volume

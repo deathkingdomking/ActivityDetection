@@ -11,6 +11,7 @@ def show_image(img):
 
 def draw_labels_and_boxes(img, boxes, confidences, classids, idxs, colors, labels):
     # If there are any detections
+    json_data = []
     if len(idxs) > 0:
         for i in idxs.flatten():
             # Get the bounding box coordinates
@@ -24,8 +25,9 @@ def draw_labels_and_boxes(img, boxes, confidences, classids, idxs, colors, label
             cv.rectangle(img, (x, y), (x+w, y+h), color, 2)
             text = "{}: {:4f}".format(labels[classids[i]], confidences[i])
             cv.putText(img, text, (x, y-5), cv.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+            json_data.append({'box': ((x,y), (x+w, y+h)), 'id': text})
 
-    return img
+    return img, json_data
 
 
 def generate_boxes_confidences_classids(outs, height, width, tconf):
@@ -91,6 +93,6 @@ def infer_image(net, layer_names, height, width, img, colors, labels, FLAGS,
         raise '[ERROR] Required variables are set to None before drawing boxes on images.'
         
     # Draw labels and boxes on the image
-    img = draw_labels_and_boxes(img, boxes, confidences, classids, idxs, colors, labels)
+    img, json_data = draw_labels_and_boxes(img, boxes, confidences, classids, idxs, colors, labels)
 
-    return img, boxes, confidences, classids, idxs
+    return img, json_data

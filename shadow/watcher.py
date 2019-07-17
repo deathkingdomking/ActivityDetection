@@ -1,12 +1,24 @@
+
+import sys
+sys.path.append("..")
+
+import os
+import json
 import logging
 import shutil
 import time
+import kafka_client
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 
 ROOT_DIR = "/root/data/"
 ACTVITIT_DIR = os.path.join(ROOT_DIR, 'activity')
+IMG_SUFFIX = ".jpeg"
+JSON_SUFFIX = ".json"
+
+KAFKA_CLIENT = kafka_client.Kafka_Client()
+
 
 class Watcher:
     DIRECTORY_TO_WATCH = "/root/data/"
@@ -48,19 +60,36 @@ class Handler(FileSystemEventHandler):
         elif event.event_type == 'created':
             # Take any action here when a file is first created.
             print ("Received created event - %s." % event.src_path)
+            Handler.call_service(event.src_path)
 
 
         elif event.event_type == 'modified':
             # Taken any action here when a file is modified.
             print ("Received modified event - %s." % event.src_path)
 
-
     @staticmethod 
     def call_service(src_path):
-        path_name = os.path.basename(src_path)
-        shutil.copy(src_path, os.path.join(ACTVITIT_DIR, 'in'))
-        while ()                     
 
+        # calling the service asyncly
+        file_name = os.path.basename(src_path).rstrip(IMG_SUFFIX)
+        shutil.copy(src_path, os.path.join(ACTVITIT_DIR, 'in'))
+
+        predicted_img_name = 'predicted-' + file_name + IMG_SUFFIX
+        predicted_json_name = 'predicted-' + file_name + JSON_SUFFIX
+        model_output_dir = os.path.join(ACTVITIT_DIR, 'out')
+        json_data_path = os.path.join(model_output_dir, predicted_json_name)
+        print ('json_data_path = %s' % json_data_path)
+
+        while (True):
+            if (os.path.exists(json_data_path)):  
+                with open(json_data_path, 'r') as json_file:  
+                    data = json.load(json_file)
+                KAFKA_CLIENT.send_data(data)                        
+                print ("the preidiction is done: %s" % data)
+                break
+            else:
+                print ("the preidiction is not done yet, go back to sleep for 0.5sec")
+                time.sleep(0.5)           
 
 
 if __name__ == '__main__':
