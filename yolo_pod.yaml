@@ -14,10 +14,28 @@ spec:
         app: activity
     spec: 
       containers: 
+        # - 
+        #   image: activity-detection/cv:latest
+        #   imagePullPolicy: Never
+        #   name: activity
+        #   volumeMounts:
+        #     -   
+        #       mountPath: /root/data/
+        #       name: yolo-data-volume
+        #     - 
+        #       mountPath: /root/workspace/cv/
+        #       name: yolo-code-volume
+        #   # command: ["/bin/sh"]
+        #   # args: ["-c", "python3 /root/workspace/cv/yolo.py"]
+        #   command: ["/bin/sh"]
+        #   args: ["-c", "while true; do echo hello; sleep 10;done"]
+        #   ports:
+        #     - 
+        #       containerPort: 3306 
         - 
           image: activity-detection/cv:latest
           imagePullPolicy: Never
-          name: activity
+          name: two-stage
           volumeMounts:
             -   
               mountPath: /root/data/
@@ -25,13 +43,16 @@ spec:
             - 
               mountPath: /root/workspace/cv/
               name: yolo-code-volume
+            - 
+              mountPath: /models/
+              name: two-stage-volume
           # command: ["/bin/sh"]
           # args: ["-c", "python3 /root/workspace/cv/yolo.py"]
           command: ["/bin/sh"]
           args: ["-c", "while true; do echo hello; sleep 10;done"]
           ports:
             - 
-              containerPort: 3306     
+              containerPort: 3306          
         - 
           image: activity-detection/shadow:latest
           imagePullPolicy: Never
@@ -64,7 +85,11 @@ spec:
           hostPath:
             path: /Users/dakanwang/workspace/ActivityDetection/
             type: Directory
-        
+        - 
+          name: two-stage-volume
+          hostPath:
+            path: /Users/dakanwang/workspace/on_premise/activity_2stage/
+            type: Directory
 
 
 ---

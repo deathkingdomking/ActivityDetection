@@ -2,6 +2,7 @@ import numpy as np
 import argparse
 import cv2 as cv
 import subprocess
+import datetime
 import time
 import os
 
@@ -9,9 +10,34 @@ def show_image(img):
     cv.imshow("Image", img)
     cv.waitKey(0)
 
+def get_boxes(img,boxes,idxs, scale):
+    height, width = img.shape[:2]
+    patches = []
+    exp_margin = (scale - 1)/2
+    if len(idxs) > 0:
+        for i in idxs.flatten():
+            # Get the bounding box coordinates
+            x, y = boxes[i][0], boxes[i][1]
+            w, h = boxes[i][2], boxes[i][3]
+
+            x = int(x - exp_margin*w)
+            y = int(y - exp_margin*h)
+            w = int(w*scale)
+            h = int(h*scale)
+
+            x = max(0,x)
+            y = max(0,y)
+            w = min(w, width - x)
+            h = min(h, height -y)
+
+            img_tmp = img[y:y+h,x:x+w,:].copy()
+            patches.append(img_tmp)
+            # show_image(img_tmp)
+    return patches    
+
 def draw_labels_and_boxes(img, boxes, confidences, classids, idxs, colors, labels):
     # If there are any detections
-    json_data = []
+    json_data = {'result':{'positions':[]}}
     if len(idxs) > 0:
         for i in idxs.flatten():
             # Get the bounding box coordinates
@@ -25,7 +51,7 @@ def draw_labels_and_boxes(img, boxes, confidences, classids, idxs, colors, label
             cv.rectangle(img, (x, y), (x+w, y+h), color, 2)
             text = "{}: {:4f}".format(labels[classids[i]], confidences[i])
             cv.putText(img, text, (x, y-5), cv.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
-            json_data.append({'box': ((x,y), (x+w, y+h)), 'id': text})
+            json_data['result']['positions'].append({'x': x, 'y':y, 'h':h, 'w':w, 'id': text})
 
     return img, json_data
 
@@ -96,3 +122,44 @@ def infer_image(net, layer_names, height, width, img, colors, labels, FLAGS,
     img, json_data = draw_labels_and_boxes(img, boxes, confidences, classids, idxs, colors, labels)
 
     return img, json_data
+
+
+def draw_labels_and_boxes_2_stage(img, boxes , idxs , preds , labels):
+    # If there are any detections
+    json_data = {'result':{'positions':[]}}
+
+    if len(idxs) > 0:
+        idx_cnt = 0
+        for i in idxs.flatten():
+            # Get the bounding box coordinates
+            x, y = boxes[i][0], boxes[i][1]
+            w, h = boxes[i][2], boxes[i][3]
+
+            # Get the unique color for this class
+            color = [0,255,0]
+
+            # Draw the bounding box rectangle and label on the image
+            cv.rectangle(img, (x, y), (x + w, y + h), color, 2)
+
+            pred = preds[idx_cnt]
+            names = []
+            for i in range(len(pred)):
+                if pred[i] > 0:
+                    names.append( (pred[i],labels[i]))
+            sorted(names,key=lambda s: s[0] , reverse=True)
+
+            str_out = ''
+            for i in range(len(names)):
+                if i == 3:
+                    break
+                str_out = str_out + names[i][1] + ';'
+
+            text = "{}".format(str_out)
+            # text = "{:d}".format(idx_cnt)
+            cv.putText(img, text, (x+5, y + 15), cv.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+
+            json_data['result']['positions'].append({'x': x, 'y':y, 'h':h, 'w':w, 'id': text})
+
+            idx_cnt += 1
+
+    return img, json_data    

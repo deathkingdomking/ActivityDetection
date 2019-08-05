@@ -1,11 +1,12 @@
-import numpy as np
 import argparse
+import numpy as np
 import cv2 as cv
 import subprocess
 import time
 import os
 from yolo_utils import infer_image, show_image
 from yolo_model import YoloModel
+from two_stage_model import TwoStageModel
 import logging
 import shutil
 from watchdog.observers import Observer
@@ -15,7 +16,8 @@ FLAGS = []
 
 
 ROOT_DIR = "/root/data/"
-ACTVITIT_DIR = os.path.join(ROOT_DIR, 'activity')
+# ACTVITIT_DIR = os.path.join(ROOT_DIR, 'activity')
+ACTVITIT_DIR = os.path.join(ROOT_DIR, 'activity_2stage')
 ACTIVITY_DIR_IN = os.path.join(ACTVITIT_DIR, 'in')
 ACTIVITY_DIR_OUT = os.path.join(ACTVITIT_DIR, 'out')
 IMG_SUFFIX = ".jpeg"
@@ -37,7 +39,8 @@ class Watcher:
         FLAGS.config = '/'.join([FLAGS.model_path, 'config.cfg'])
         FLAGS.labels = '/'.join([FLAGS.model_path, 'name.names'])
         print ('flags=%s' % FLAGS)
-        model = YoloModel(FLAGS)
+        # model = YoloModel(FLAGS)
+        model = TwoStageModel()
         Handler.model = model
         print ('intialzied model to be: %s', model)
 

@@ -14,7 +14,7 @@ from watchdog.events import FileSystemEventHandler
 
 
 ROOT_DIR = "/root/data/"
-ACTVITIT_DIR = os.path.join(ROOT_DIR, 'activity_2stage')
+ACTVITIT_DIR = os.path.join(ROOT_DIR, 'activity')
 IMG_SUFFIX = ".jpeg"
 JSON_SUFFIX = ".json"
 
