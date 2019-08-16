@@ -107,7 +107,7 @@ class Handler(FileSystemEventHandler):
                                         "id": "232"}   
                     data["publish"] = "2019-09-11 19:00:12Z"
                     data['description'] = 'action_recognition'
-                    data['ec_event_time'] = time.time()
+                    data['ec_event_time'] = int(time.time() * 1000)
                     data["ec_event_id"] = "this-is-a-unique-id"
 
                     data['result']['source'] = predicted_img_name
