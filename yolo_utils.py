@@ -37,7 +37,7 @@ def get_boxes(img,boxes,idxs, scale):
 
 def draw_labels_and_boxes(img, boxes, confidences, classids, idxs, colors, labels):
     # If there are any detections
-    json_data = {'result':{'positions':[]}}
+    json_data = {'result':{'positions':[], 'areas':[], 'behaviors':[]}}
     if len(idxs) > 0:
         for i in idxs.flatten():
             # Get the bounding box coordinates
@@ -51,7 +51,9 @@ def draw_labels_and_boxes(img, boxes, confidences, classids, idxs, colors, label
             cv.rectangle(img, (x, y), (x+w, y+h), color, 2)
             text = "{}: {:4f}".format(labels[classids[i]], confidences[i])
             cv.putText(img, text, (x, y-5), cv.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
-            json_data['result']['positions'].append({'x': x, 'y':y, 'h':h, 'w':w, 'id': text})
+            json_data['result']['positions'].append({'x': x, 'y':y, 'h':h, 'w':w})
+            json_data['result']['behaviors'].append(text)
+            json_data['result']['areas'].append('default')
 
     return img, json_data
 
@@ -126,7 +128,7 @@ def infer_image(net, layer_names, height, width, img, colors, labels, FLAGS,
 
 def draw_labels_and_boxes_2_stage(img, boxes , idxs , preds , labels):
     # If there are any detections
-    json_data = {'result':{'positions':[]}}
+    json_data = {'result':{'positions':[], 'areas':[], 'behaviors':[]}}
 
     if len(idxs) > 0:
         idx_cnt = 0
@@ -158,7 +160,10 @@ def draw_labels_and_boxes_2_stage(img, boxes , idxs , preds , labels):
             # text = "{:d}".format(idx_cnt)
             cv.putText(img, text, (x+5, y + 15), cv.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
-            json_data['result']['positions'].append({'x': x, 'y':y, 'h':h, 'w':w, 'id': text})
+            json_data['result']['positions'].append({'x': x, 'y':y, 'h':h, 'w':w})
+            json_data['result']['behaviors'].append(text)
+            json_data['result']['areas'].append('default')
+
 
             idx_cnt += 1
 

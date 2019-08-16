@@ -20,7 +20,7 @@ class Kafka_Client:
 
 
 	def send_data(self, json_data):
-		event = activity_chn.sample_activity_chn_data
+		event = json_data
 		reg = lambda: self.ec.register_schema_from_file(os.path.join(script_dir,"./schema/activity_chn.avro"), "recognize-test")
 		# asyncio.get_event_loop().run_until_complete(reg())
 		async def reg_and_send():
@@ -29,8 +29,8 @@ class Kafka_Client:
 	 		await sender.send_event(event, sender.version)
 		# asyncio.get_event_loop().run_until_complete(reg_and_send())
 		try:
-			print ('use event loop in main thread')
 			loop=asyncio.get_event_loop()
+			print ('use event loop in main thread')
 		except RuntimeError:
 			print ('use event loop in spawned thread')
 			loop=asyncio.new_event_loop()

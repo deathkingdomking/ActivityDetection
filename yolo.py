@@ -78,7 +78,12 @@ class Handler(FileSystemEventHandler):
         elif event.event_type == 'created':
             # Take any action here when a file is first created.
             print ("Received created event - %s." % event.src_path)
-            Handler.call_service(event.src_path, Handler.model)
+            if ('json' in event.src_path):
+                img_path = event.src_path.replace('json', 'jpg')
+                print ("Received image writing done event - %s." % img_path)
+                #Handler.call_service(img_path)
+                Handler.call_service(img_path, Handler.model)
+            #Handler.call_service(event.src_path, Handler.model)
         else:
         	return None
 
@@ -86,12 +91,19 @@ class Handler(FileSystemEventHandler):
     @staticmethod 
     def call_service(in_path, model):
         file_name = os.path.basename(in_path).rstrip(IMG_SUFFIX)
+
         predicted_img_name = 'predicted-' + file_name + IMG_SUFFIX
-        predicted_json_name = 'predicted-' + file_name + JSON_SUFFIX
         out_img_path = os.path.join(ACTIVITY_DIR_OUT, predicted_img_name)
+
+        tmp_predicted_json_name = 'tmp-predicted-' + file_name + JSON_SUFFIX
+        tmp_out_json_path = os.path.join(ACTIVITY_DIR_OUT, tmp_predicted_json_name)
+
+        predicted_json_name = 'predicted-' + file_name + JSON_SUFFIX
         out_json_path = os.path.join(ACTIVITY_DIR_OUT, predicted_json_name)
 
-        model.predict(in_path, out_img_path, out_json_path)
+        model.predict(in_path, out_img_path, tmp_out_json_path)
+
+        shutil.move(tmp_out_json_path, out_json_path)
 
 
 if __name__ == '__main__':

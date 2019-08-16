@@ -109,6 +109,20 @@
                 "doc": "just a doc",
                 "type": "string"
             }, {
+                "name" : "behaviors",
+                "doc": "just a doc",
+                "type" : {
+                    "type" : "array",
+                    "items" : "string"
+                }
+            }, {
+                "name" : "areas",
+                "doc": "just a doc",
+                "type" : {
+                    "type" : "array",
+                    "items" : "string"
+                }
+            }, {
                 "name": "positions",
                 "doc": "just a doc",
                 "type": {

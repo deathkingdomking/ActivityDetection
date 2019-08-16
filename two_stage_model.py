@@ -36,7 +36,7 @@ class TwoStageModel:
 
     for i in range(len(self.labels)):
         if (self.labels[i] == 'talking'): 
-            print ('started engagemetn report')
+            print ('started engagemen t report')
             self.labels[i] = 'engaging'               
 
     print ('two stage model loaded!')
