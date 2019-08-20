@@ -1,0 +1,1 @@
+sudo docker run -p 7000:7000 -v /Users/dakanwang/workspace/on_premise/activity_2stage/out/:/root/workspace/  -it fileserver

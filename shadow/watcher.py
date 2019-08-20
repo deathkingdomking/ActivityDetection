@@ -3,11 +3,13 @@ import datetime
 import sys
 sys.path.append("..")
 
+import asyncio
 import os
 import json
 import logging
 import shutil
 import time
+import uuid
 import kafka_client
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
@@ -19,7 +21,8 @@ ACTVITIT_DIR = os.path.join(ROOT_DIR, 'activity_2stage')
 IMG_SUFFIX = ".jpeg"
 JSON_SUFFIX = ".json"
 
-KAFKA_CLIENT = kafka_client.Kafka_Client()
+KAFKA_CLIENT = kafka_client.Kafka_Client('science')
+KAFKA_CLIENT.register_schema("../schema/activity_chn.avro", "recognize-test")
 
 
 class Watcher:
@@ -105,20 +108,20 @@ class Handler(FileSystemEventHandler):
                     data["object"] =  {"type": "Location",  "displayName": "China Oversea", \
                                         "area": {"displayName": "Third floor elevator", "id": "areaA3B4"}, \
                                         "id": "232"}   
-                    data["publish"] = "2019-09-11 19:00:12Z"
+                    data["publish"] = datetime.datetime.now().strftime("%m-%d-%y, %H:%M:%S")
                     data['description'] = 'action_recognition'
                     data['ec_event_time'] = int(time.time() * 1000)
-                    data["ec_event_id"] = "this-is-a-unique-id"
+                    data["ec_event_id"] = str(uuid.uuid1())
 
-                    data['result']['source'] = predicted_img_name
+                    data['result']['source'] = 'http://10.249.77.67:7000/root/workspace/' + predicted_img_name
                     data['result']['count'] = len(data['result']['positions'])
                     data['result']['type'] = 'Person'
-
 
                 with open(tmp_data_path, 'w') as kafka_file:
                     json.dump(data, kafka_file)
                     print ('sending the kafka data')
                     KAFKA_CLIENT.send_data(data)
+
                 kafka_file.close()
                 shutil.move(tmp_data_path, kafka_data_path)                       
                 return
