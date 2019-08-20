@@ -111,14 +111,14 @@ class Handler(FileSystemEventHandler):
                     data["ec_event_id"] = "this-is-a-unique-id"
 
                     data['result']['source'] = predicted_img_name
-                    data['result']['count'] = 2
+                    data['result']['count'] = len(data['result']['positions'])
                     data['result']['type'] = 'Person'
 
 
                 with open(tmp_data_path, 'w') as kafka_file:
                     json.dump(data, kafka_file)
                     print ('sending the kafka data')
-                    KAFKA_CLIENT.send_data(activity_chn.sample_activity_chn_data)
+                    KAFKA_CLIENT.send_data(data)
                 kafka_file.close()
                 shutil.move(tmp_data_path, kafka_data_path)                       
                 return
